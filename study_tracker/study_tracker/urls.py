@@ -19,8 +19,8 @@ from django.urls import path
 from tracker import views
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('upload_timetable/', views.upload_timetable),
+    path('upload_timetable/', views.upload_timetable, name='upload_timetable'),
     path('download_template/', views.download_template, name='download_template'),
     path('homepage/', views.homepage, name="homepage"),
-    
+    path('get_timetable_data/', views.get_timetable_data, name='get_timetable_data'),
 ]

@@ -12,7 +12,7 @@ class Timetable(models.Model):
     start_time = models.TimeField()
     end_time = models.TimeField()
     # duration = models.DurationField(null=True, blank=True)
-    accumulated_time = models.DurationField(null=True, blank=True)
+    # accumulated_time = models.DurationField(null=True, blank=True) # will add later 
     total_time = models.CharField(max_length=50, blank=True)  # Field to store the calculated total time
 
 
@@ -23,31 +23,17 @@ class Timetable(models.Model):
 
     def calculate_total_time(self):
         # Calculate the difference between end_time and start_time
-        # Convert times to datetime objects
+        # Convert times to datetime objects (taking reference of today's date)
         start_datetime = datetime.combine(datetime.today(), self.start_time)
         end_datetime = datetime.combine(datetime.today(), self.end_time)
+        # breakpoint()
         total_seconds = abs((start_datetime - end_datetime).total_seconds())
         # Convert total seconds to hours and minutes
         hours = int(total_seconds // 3600)
         minutes = int((total_seconds % 3600) // 60)
-        # Store the total time as a formatted string
+        #total time in string format
         self.total_time = f"{hours} hours {minutes} minutes"
 
-
-    # def save(self, *args, **kwargs):
-    #     # Calculate duration
-    #     if self.start_time and self.end_time:
-    #         # breakpoint()
-    #         self.duration = self.end_time - self.start_time
-
-    #     # Calculate accumulated time
-    #     total_duration = Timetable.objects.filter(end_time__lte=self.end_time).aggregate(total_duration=models.Sum('duration'))['total_duration']
-    #     if total_duration:
-    #         self.accumulated_time = total_duration
-    #     else:
-    #         self.accumulated_time = self.duration
-
-    #     super(Timetable, self).save(*args, **kwargs)
 
     def __str__(self):
         return self.activity

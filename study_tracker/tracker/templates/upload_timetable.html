@@ -6,6 +6,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Upload Timetable</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
 </head>
 <body>
     <h1>Upload Timetable</h1>
@@ -42,5 +43,62 @@
     {% if error_message %}
     <p>{{ error_message }}</p>
     {% endif %}
+<!-- show timer -->
+
+<h1>Timer</h1>
+<button id="start-timer-btn">Start Timer</button>
+<div id="timer-box">
+    <h2 id="activity-name"></h2>
+    <div id="timer"></div>
+</div>
+
+<script>
+    // Function to start timer for each entry
+    function startTimer(duration, activityName) {
+        var timer = duration;
+        var activityNameElement = document.getElementById("activity-name");
+        var timerElement = document.getElementById("timer");
+        activityNameElement.textContent = activityName; 
+
+        var intervalId = setInterval(function () {
+        var hours = Math.floor(timer / 3600);
+        var minutes = Math.floor((timer % 3600) / 60);
+        var seconds = timer % 60;
+        
+        var formattedTime = 
+            (hours < 10 ? "0" + hours : hours) + ":" +
+            (minutes < 10 ? "0" + minutes : minutes) + ":" +
+            (seconds < 10 ? "0" + seconds : seconds);
+
+        timerElement.textContent = formattedTime;
+
+            if (--timer < 0) {
+                clearInterval(intervalId); // Clear the interval
+                // Move to the next activity
+                var nextActivity = getNextActivity(activityName); // You need to implement this function
+                if (nextActivity) {
+                    startTimer(nextActivity.duration, nextActivity.name);
+                }
+            }
+        }, 1000);
+    }
+
+    // Function to start timer for all activities
+    function startAllTimers() {
+        fetch('/get_timetable_data') // Endpoint to fetch timetable data from server
+            .then(response => response.json())
+            .then(data => {
+                data.forEach(activity => {
+                    startTimer(activity.duration, activity.name);
+                });
+            })
+            .catch(error => console.error('Error fetching timetable data:', error));
+    }
+
+    // Start all timers when the button is clicked
+    document.getElementById('start-timer-btn').addEventListener('click', startAllTimers);
+</script>
+
+
 </body>
 </html>

@@ -1,0 +1,63 @@
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+.background-image {
+    background-image: url('../images/background_image.jpeg') ;
+    background-size: cover;
+    background-position: center;
+    height: 100vh;
+    position: relative;
+}
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    position: absolute;
+    top: 0;
+    width: 100%;
+}
+
+/* nav bar */
+.nav-logo img {
+    height: 40px;
+    width: auto;
+}
+
+.nav-links {
+    list-style: none;
+    display: flex;
+}
+
+.nav-links li {
+    margin-right: 20px;
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: white;
+    font-weight: bold;
+    transition: color 0.3s ease;
+}
+
+.nav-links a:hover {
+    color: #ffc107; 
+}
+
+.account-section a {
+    text-decoration: none;
+    color: white;
+    font-weight: bold;
+    border: 1px solid white;
+    padding: 8px 15px;
+    border-radius: 20px;
+    transition: background-color 0.3s ease;
+}
+
+.account-section a:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
