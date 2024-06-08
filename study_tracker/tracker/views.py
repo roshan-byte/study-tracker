@@ -14,7 +14,7 @@ def upload_timetable(request):
         excel_file = request.FILES['excel_file']
         if excel_file.name.endswith('.xlsx'):
             # Clean the database: Delete all existing entries
-            Timetable.objects.all().delete()
+            Timetable.objects.all().delete() 
             # Read Excel file using pandas
             df = pd.read_excel(excel_file)
             timetable_entries = []
