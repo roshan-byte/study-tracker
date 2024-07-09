@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from django.db import models
 
 class User(models.Model):
@@ -7,14 +7,14 @@ class User(models.Model):
     total_hours_allocated = models.IntegerField()
     daily_hours = models.IntegerField()
 
+    def __str__(self):
+        return self.name
+
 class Timetable(models.Model):
     activity = models.CharField(max_length=100)
     start_time = models.TimeField()
     end_time = models.TimeField()
-    # duration = models.DurationField(null=True, blank=True)
-    # accumulated_time = models.DurationField(null=True, blank=True) # will add later 
     total_time = models.CharField(max_length=50, blank=True)  # Field to store the calculated total time
-
 
     def save(self, *args, **kwargs):
         # Calculate the total time before saving
@@ -22,22 +22,34 @@ class Timetable(models.Model):
         super().save(*args, **kwargs)
 
     def calculate_total_time(self):
+        # Convert start_time and end_time to datetime.time objects if they are strings
+        if isinstance(self.start_time, str):
+            self.start_time = datetime.strptime(self.start_time, '%H:%M').time()
+        if isinstance(self.end_time, str):
+            self.end_time = datetime.strptime(self.end_time, '%H:%M').time()
+        
         # Calculate the difference between end_time and start_time
-        # Convert times to datetime objects (taking reference of today's date)
         start_datetime = datetime.combine(datetime.today(), self.start_time)
         end_datetime = datetime.combine(datetime.today(), self.end_time)
-        # breakpoint()
-        total_seconds = abs((start_datetime - end_datetime).total_seconds())
+        
+        # Handle overnight activities
+        if end_datetime < start_datetime:
+            end_datetime += timedelta(days=1)
+        
+        total_seconds = (end_datetime - start_datetime).total_seconds()
+        
         # Convert total seconds to hours and minutes
         hours = int(total_seconds // 3600)
         minutes = int((total_seconds % 3600) // 60)
-        #total time in string format
+        
+        # Total time in string format
         self.total_time = f"{hours} hours {minutes} minutes"
-
 
     def __str__(self):
         return self.activity
 
-
 class Quote(models.Model):
     text = models.TextField()
+
+    def __str__(self):
+        return self.text
