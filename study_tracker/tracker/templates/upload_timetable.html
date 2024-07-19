@@ -4,129 +4,284 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Upload Timetable</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"></script>
     <style>
         body {
-            background-color: #f8f9fa;
-            padding: 20px;
+            font-family: 'Montserrat', sans-serif;
         }
-        .container {
-            max-width: 800px;
-            margin: auto;
-        }
-        h1, h2 {
-            color: #343a40;
-        }
-        .table {
-            margin-top: 20px;
-        }
-        .table tbody tr:hover {
-            background-color: #f1f1f1;
-        }
-        #timer-box {
-            margin-top: 20px;
-            text-align: center;
-        }
-        #timer {
-            font-size: 2em;
-            font-weight: bold;
-            color: #28a745;
-        }
-        .btn {
-            margin-top: 10px;
-        }
-        .btn:hover {
-            background-color: #1d2124;
+        .dark-mode {
+            background-color: #000000;
             color: #ffffff;
         }
-        .progress {
-            height: 20px;
-            margin-top: 10px;
-            border: 1px solid #343a40; /* Add border to progress bar */
-            border-radius: 5px;
-            overflow: hidden; /* Ensure border-radius works */
+        .dark-mode .container {
+            background-color: #1c1c1c;
         }
-        .progress-bar {
-            transition: background-color 0.3s ease;
+        .dark-mode .text-blue-900 {
+            color: #1E90FF;
         }
-        .progress-bar:hover {
-            background-color: #1d2124; /* Change color on hover */
+        .dark-mode .bg-blue-500, .dark-mode .bg-blue-600, .dark-mode .bg-blue-900 {
+            background-color: #1E90FF;
+        }
+        .dark-mode .bg-green-500, .dark-mode .bg-green-700 {
+            background-color: #32cd32;
+        }
+        .dark-mode .bg-red-500, .dark-mode .bg-red-700 {
+            background-color: #ff4500;
+        }
+        .dark-mode .bg-gray-500, .dark-mode .bg-gray-600, .dark-mode .bg-gray-300 {
+            background-color: #4a4a4a;
+        }
+        .dark-mode .bg-white {
+            background-color: #1c1c1c;
+        }
+        .dark-mode .text-white {
+            color: #ffffff;
+        }
+        .dark-mode .border {
+            border-color: #ffffff;
+        }
+        .dark-mode .hover\:bg-gray-100:hover {
+            background-color: #2c2c2c;
+        }
+        .dark-mode .odd\:bg-gray-50:nth-of-type(odd) {
+            background-color: #2c2c2c;
+        }
+        .dark-mode .alert-danger {
+            background-color: #dc3545;
+            border-color: #dc3545;
+        }
+        .dark-mode .alert-danger .text-red-700 {
+            color: #ffffff;
+        }
+        .dark-mode .table-auto tbody tr td {
+            color: #ffffff;
+        }
+        /* Input field styles for dark mode */
+        .dark-mode .form-control {
+            background-color: #333333;
+            color: #ffffff;
+            border: 1px solid #555555;
+        }
+        .dark-mode .form-control::placeholder {
+            color: #aaaaaa;
+        }
+        /* Toggle switch styles */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        input:checked + .slider {
+            background-color: #1E90FF;
+        }
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+        /* Styling for the heading */
+        h1 {
+            font-weight: 700;
+            letter-spacing: 1px;
         }
     </style>
 </head>
-<body>
-    <div class="container">
-        <h1 class="text-center">Upload Timetable</h1>
-        <form method="post" enctype="multipart/form-data" class="form-inline justify-content-center">
-            {% csrf_token %}
-            <div class="form-group mx-sm-3 mb-2">
-                <input type="file" name="excel_file" accept=".xlsx" class="form-control-file">
+<body class="bg-gray-100 p-6">
+    <div class="container mx-auto max-w-4xl bg-white p-8 rounded-lg shadow-lg">
+        <div class="flex justify-end items-center mb-8">
+            <div class="flex items-center">
+                <span id="theme-label" class="text-gray-700 mr-2">Enable Dark Mode</span>
+                <label class="switch">
+                    <input type="checkbox" id="theme-toggle">
+                    <span class="slider"></span>
+                </label>
             </div>
-            <button type="submit" class="btn btn-primary mb-2">Upload</button>
-        </form>
+        </div>
+        <button class="bg-blue-500 text-white px-4 py-2 rounded-md mb-6 hover:bg-blue-600 dark:bg-golden-500 dark:text-black" onclick="openModal('upload-modal'); smoothScrollTo('#upload-modal');">Upload Timetable</button>
+
+        <div id="upload-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden">
+            <div id="upload-modal-content" class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+                <div class="mt-3 text-center">
+                    <h3 class="text-lg leading-6 font-medium text-blue-900 dark:text-golden-500">Upload Timetable</h3>
+                    <div class="mt-2 px-7 py-3">
+                        <form method="post" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <div class="form-group mb-4">
+                                <input type="file" name="excel_file" accept=".xlsx" class="form-control-file p-2 border rounded-md w-full">
+                            </div>
+                            <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 dark:bg-golden-500 dark:text-black">Upload</button>
+                            <button type="button" class="bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600" onclick="closeModal('upload-modal');">Cancel</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         {% if timetable_entries %}
-        <h2 class="text-center">Uploaded Timetable</h2>
-        <table class="table table-bordered table-hover">
-            <thead class="thead-dark">
+        <h2 class="text-2xl font-semibold text-center mt-8 mb-4 text-blue-900 dark:text-golden-500">Uploaded Timetable</h2>
+        <table id="timetable" class="table-auto w-full border-collapse bg-white shadow-lg rounded-lg mb-6">
+            <thead class="bg-blue-900 text-white dark:bg-golden-500 dark:text-black">
                 <tr>
-                    <th>Activity</th>
-                    <th>Start Time</th>
-                    <th>End Time</th>
-                    <th>Total Time</th>
+                    <th class="p-4">Activity</th>
+                    <th class="p-4">Start Time</th>
+                    <th class="p-4">End Time</th>
+                    <th class="p-4">Total Time</th>
                 </tr>
             </thead>
             <tbody>
                 {% for entry in timetable_entries %}
-                <tr>
-                    <td>{{ entry.activity }}</td>
-                    <td>{{ entry.start_time }}</td>
-                    <td>{{ entry.end_time }}</td>
-                    <td>{{ entry.total_time }}</td>
+                <tr class="hover:bg-gray-100 odd:bg-gray-50 dark:hover:bg-gray-700 dark:odd:bg-gray-700 transition transform hover:scale-105">
+                    <td class="border p-4">{{ entry.activity }}</td>
+                    <td class="border p-4">{{ entry.start_time }}</td>
+                    <td class="border p-4">{{ entry.end_time }}</td>
+                    <td class="border p-4">{{ entry.total_time }}</td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
+        <div class="text-center mb-6">
+            <button class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 dark:bg-golden-500 dark:text-black" onclick="openModal('edit-modal'); smoothScrollTo('#edit-modal');">Edit Timetable</button>
+        </div>
         {% endif %}
 
         {% if error_message %}
-        <div class="alert alert-danger" role="alert">
+        <div class="alert alert-danger mt-4 p-4 bg-red-100 border-l-4 border-red-500 text-red-700 transition transform hover:scale-105" role="alert">
             {{ error_message }}
         </div>
         {% endif %}
 
-        <h1 class="text-center">Timer</h1>
-        <div class="text-center">
-            <select id="activity-select" class="form-control">
-                <option value="" selected>Auto-select from timetable</option>
-                {% for entry in timetable_entries %}
-                <option value="{{ entry.activity }}">{{ entry.activity }}</option>
-                {% endfor %}
-            </select>
-            <button id="start-timer-btn" class="btn btn-success">Start Timer</button>
-            <button id="stop-timer-btn" class="btn btn-danger" style="display: none;">Stop Timer</button>
+        <h1 class="text-2xl font-semibold text-center mt-8 mb-4 text-blue-900 dark:text-golden-500">Timer</h1>
+        <div class="bg-white p-6 rounded-lg shadow-lg">
+            <div class="button-container flex justify-center space-x-4 mb-4">
+                <button id="start-timer-btn" class="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-700" onclick="buttonClickAnimation(this);">Start Timer</button>
+                <button id="stop-timer-btn" class="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-700" style="display: none;" onclick="buttonClickAnimation(this);">Stop Timer</button>
+            </div>
+            <div id="timer-box" class="mt-6 text-center">
+                <h2 id="activity-name" class="text-lg font-semibold text-gray-800">Current Activity: </h2>
+                <div id="timer" class="text-2xl font-bold text-green-600">00:00:00</div>
+                <div class="progress h-4 bg-gray-300 rounded-md mt-2">
+                    <div id="timer-progress" class="bg-green-500 h-4 rounded-md" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+            </div>
         </div>
-        <div id="timer-box">
-            <h2 id="activity-name">Current Activity: </h2>
-            <div id="timer">00:00:00</div>
-            <div class="progress">
-                <div id="timer-progress" class="progress-bar" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+
+        <div id="edit-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden">
+            <div id="edit-modal-content" class="relative top-20 mx-auto p-5 border w-full max-w-4xl shadow-lg rounded-md bg-white">
+                <div class="mt-3 text-center">
+                    <h3 class="text-lg leading-6 font-medium text-blue-900 dark:text-golden-500">Edit Timetable</h3>
+                    <div class="mt-2 px-7 py-3">
+                        <form method="post" action="{% url 'edit_timetable' %}">
+                            {% csrf_token %}
+                            <table class="table-auto w-full border-collapse bg-white shadow-lg rounded-lg mb-6">
+                                <thead class="bg-blue-900 text-white dark:bg-golden-500 dark:text-black">
+                                    <tr>
+                                        <th class="p-4">Activity</th>
+                                        <th class="p-4">Start Time</th>
+                                        <th class="p-4">End Time</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for entry in timetable_entries %}
+                                    <tr class="hover:bg-gray-100 odd:bg-gray-50 dark:hover:bg-gray-700 dark:odd:bg-gray-700">
+                                        <td class="border p-4"><input type="text" name="activity_{{ forloop.counter }}" class="form-control p-2 border rounded-md w-full dark:bg-gray-700 dark:text-white" value="{{ entry.activity }}"></td>
+                                        <td class="border p-4"><input type="text" name="start_time_{{ forloop.counter }}" class="form-control p-2 border rounded-md w-full dark:bg-gray-700 dark:text-white" value="{{ entry.start_time|date:'g A' }}"></td>
+                                        <td class="border p-4"><input type="text" name="end_time_{{ forloop.counter }}" class="form-control p-2 border rounded-md w-full dark:bg-gray-700 dark:text-white" value="{{ entry.end_time|date:'g A' }}"></td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                            <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 dark:bg-golden-500 dark:text-black" onclick="buttonClickAnimation(this);">Save Changes</button>
+                            <button type="button" class="bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600" onclick="closeModal('edit-modal');">Cancel</button>
+                        </form>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
-        var intervalId; // Variable to hold the interval ID
-        var currentIndex = 0; // Initialize activity index
+        document.addEventListener('DOMContentLoaded', function() {
+            if (localStorage.getItem('theme') === 'dark') {
+                document.body.classList.add('dark-mode');
+                document.getElementById('theme-toggle').checked = true;
+                document.getElementById('theme-label').textContent = 'Disable Dark Mode';
+            }
 
-        // Function to start timer for each entry
+            gsap.from("#timetable tbody tr", {
+                duration: 1,
+                y: 50,
+                opacity: 0,
+                stagger: 0.1
+            });
+        });
+
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.remove('hidden');
+            gsap.from(`#${modalId}-content`, { duration: 0.5, scale: 0.8, opacity: 0, ease: "back.out(1.7)" });
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.add('hidden');
+        }
+
+        function buttonClickAnimation(button) {
+            gsap.to(button, { duration: 0.2, scale: 0.95, yoyo: true, repeat: 1, ease: "power1.inOut" });
+        }
+
+        function smoothScrollTo(target) {
+            document.querySelector(target).scrollIntoView({
+                behavior: 'smooth'
+            });
+        }
+
+        document.getElementById('theme-toggle').addEventListener('click', function() {
+            document.body.classList.toggle('dark-mode');
+            if (document.body.classList.contains('dark-mode')) {
+                localStorage.setItem('theme', 'dark');
+                document.getElementById('theme-label').textContent = 'Disable Dark Mode';
+            } else {
+                localStorage.removeItem('theme');
+                document.getElementById('theme-label').textContent = 'Enable Dark Mode';
+            }
+        });
+
+        var intervalId;
+        var currentIndex = 0;
+
         function startTimer(duration, activityName) {
-            // Clear any existing timer
             clearInterval(intervalId);
 
             console.log(`Starting timer for activity: ${activityName} with duration: ${duration} seconds`);
-            
+
             var timer = duration;
             var totalDuration = duration;
             var activityNameElement = document.getElementById("activity-name");
@@ -134,7 +289,7 @@
             var timerProgressElement = document.getElementById("timer-progress");
             activityNameElement.textContent = "Current Activity: " + activityName; 
 
-            document.getElementById('stop-timer-btn').style.display = 'inline'; // Show Stop Timer button
+            document.getElementById('stop-timer-btn').style.display = 'inline';
 
             intervalId = setInterval(function () {
                 var hours = Math.floor(timer / 3600);
@@ -148,16 +303,14 @@
 
                 timerElement.textContent = formattedTime;
 
-                // Update progress bar
                 var progress = ((totalDuration - timer) / totalDuration) * 100;
                 timerProgressElement.style.width = progress + '%';
                 timerProgressElement.setAttribute('aria-valuenow', progress);
 
                 if (--timer < 0) {
-                    clearInterval(intervalId); // Clear the interval
-                    document.getElementById('stop-timer-btn').style.display = 'none'; // Hide Stop Timer button
+                    clearInterval(intervalId);
+                    document.getElementById('stop-timer-btn').style.display = 'none';
                     console.log(`Timer ended for activity: ${activityName}`);
-                    // Move to the next activity
                     var nextActivity = getNextActivity();
                     if (nextActivity) {
                         console.log(`Starting next timer for activity: ${nextActivity.name}`);
@@ -173,9 +326,8 @@
             }, 1000);
         }
 
-        // Function to fetch and start timers for all activities sequentially
         function startAllTimers() {
-            fetch('/get_timetable_data') // Endpoint to fetch timetable data from server
+            fetch('/get_timetable_data')
                 .then(response => {
                     if (!response.ok) {
                         throw new Error('Network response was not ok');
@@ -185,50 +337,31 @@
                 .then(data => {
                     console.log('Fetched data:', data);
 
-                    var selectedActivity = document.getElementById('activity-select').value;
-
-                    if (selectedActivity) {
-                        // If user has selected an activity, start timer for that activity
-                        var activity = data.find(activity => activity.name === selectedActivity);
-                        if (activity) {
-                            startTimer(activity.duration, activity.name);
+                    function getNextActivity() {
+                        currentIndex++;
+                        if (currentIndex < data.length) {
+                            return data[currentIndex];
                         } else {
-                            console.error('Selected activity not found in data');
+                            return null;
                         }
-                    } else {
-                        // Otherwise, start the timer for the first activity in the timetable
-                        if (data.length > 0) {
-                            // Reset currentIndex
-                            currentIndex = 0;
+                    }
 
-                            // Function to get the next activity
-                            function getNextActivity() {
-                                currentIndex++;
-                                if (currentIndex < data.length) {
-                                    return data[currentIndex];
-                                } else {
-                                    return null;
-                                }
-                            }
+                    window.getNextActivity = getNextActivity;
 
-                            // Attach the function to the global scope so it can be accessed inside startTimer
-                            window.getNextActivity = getNextActivity;
+                    console.log('Processed data with durations:', data);
 
-                            console.log('Processed data with durations:', data);
-
-                            // Start the timer for the first activity immediately
-                            console.log('Starting first timer for:', data[currentIndex]);
-                            startTimer(data[currentIndex].duration, data[currentIndex].name);
-                        }
+                    if (data.length > 0) {
+                        currentIndex = 0;
+                        console.log('Starting first timer for:', data[currentIndex]);
+                        startTimer(data[currentIndex].duration, data[currentIndex].name);
                     }
                 })
                 .catch(error => console.error('Error fetching timetable data:', error));
         }
 
-        // Function to stop the timer
         function stopTimer() {
-            clearInterval(intervalId); // Clear the interval
-            document.getElementById('stop-timer-btn').style.display = 'none'; // Hide Stop Timer button
+            clearInterval(intervalId);
+            document.getElementById('stop-timer-btn').style.display = 'none';
             console.log('Timer stopped');
             document.getElementById("activity-name").textContent = "Timer stopped";
             document.getElementById("timer").textContent = "00:00:00";
@@ -236,13 +369,11 @@
             document.getElementById("timer-progress").setAttribute('aria-valuenow', 0);
         }
 
-        // Start all timers when the Start Timer button is clicked
         document.getElementById('start-timer-btn').addEventListener('click', function() {
             console.log('Start Timer button clicked');
             startAllTimers();
         });
 
-        // Stop the timer when the Stop Timer button is clicked
         document.getElementById('stop-timer-btn').addEventListener('click', function() {
             console.log('Stop Timer button clicked');
             stopTimer();
