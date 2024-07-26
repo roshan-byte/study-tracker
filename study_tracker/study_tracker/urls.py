@@ -23,4 +23,6 @@ urlpatterns = [
     path('download_template/', views.download_template, name='download_template'),
     path('homepage/', views.homepage, name="homepage"),
     path('get_timetable_data/', views.get_timetable_data, name='get_timetable_data'),
+    path('edit_timetable/', views.edit_timetable, name='edit_timetable'),
+
 ]
